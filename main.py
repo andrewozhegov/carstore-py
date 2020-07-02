@@ -78,6 +78,10 @@ class App(QMainWindow):
         fndButton2.triggered.connect(self.findNewAuto)
         additMenu.addAction(fndButton2)
 
+        luxButton = QAction(QIcon(), 'Самый дорогой автомобиль', self)
+        luxButton.triggered.connect(self.findExpensAuto)
+        additMenu.addAction(luxButton)
+
         exitButton = QAction(QIcon(), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.triggered.connect(self.close)
@@ -134,6 +138,12 @@ class App(QMainWindow):
         res.showCarsResult(find_car)
         res.exec_()
 
+    def findExpensAuto(self):
+        highprice = Cars.select(fn.MAX(Cars.price)).scalar()
+        find_car = Cars.select().where(Cars.price == highprice)
+        res = ResultTable()
+        res.showCarsResult(find_car)
+        res.exec_()
 
 class TabsWidget(QWidget):
 
