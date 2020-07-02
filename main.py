@@ -2,7 +2,7 @@ import sys
 from peewee import *
 
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout, QTreeView, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout, QTreeView, QHBoxLayout, QInputDialog
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt
 
@@ -89,8 +89,11 @@ class App(QMainWindow):
         self.update()
 
     def on_remClient(self):
-        print("test1")
-
+        _id, okPressed = QInputDialog.getInt(self, "Удалить клиента", "Введите ID клиента: ")
+        if okPressed:
+            cl = Clients.select().where(Clients.id == _id).get()
+            cl.delete_instance()
+        self.update()
 
 class TabsWidget(QWidget):
 
