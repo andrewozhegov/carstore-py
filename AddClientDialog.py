@@ -1,12 +1,12 @@
 import sys
 
 from PyQt5.QtCore import pyqtSlot
-
 from PyQt5.QtWidgets import (QApplication, QComboBox, QDialog,
 QDialogButtonBox, QFormLayout, QGridLayout, QGroupBox, QHBoxLayout,
 QLabel, QLineEdit, QMenu, QMenuBar, QPushButton, QSpinBox, QTextEdit,
 QVBoxLayout)
 
+from DB import Cars, Clients
 
 class AddClientDialog(QDialog):
 
