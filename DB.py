@@ -35,3 +35,9 @@ class Clients(Base):
     class Meta:
         db_table = "clients"
 
+class Stores(Base):
+    id = PrimaryKeyField(null=False)
+    address = CharField()
+    class Meta:
+        db_table = "stores"
+
