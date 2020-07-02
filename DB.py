@@ -1,8 +1,8 @@
-import sys
-
+import sys, os
 from peewee import *
 
-db = SqliteDatabase('/home/andrew/Documents/carstore/carstore.db')
+db_path = os.path.dirname(os.path.abspath(__file__)) + '/carstore.db'
+db = SqliteDatabase(db_path)
 
 class Base(Model):
     class Meta:
