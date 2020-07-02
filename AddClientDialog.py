@@ -69,3 +69,4 @@ class AddClientDialog(QDialog):
             condition=self.input_cond.text(),
             price=self.input_price.text())
         self.close()
+

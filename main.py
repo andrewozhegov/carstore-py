@@ -2,13 +2,13 @@ import sys
 from peewee import *
 
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout, QTreeView, QHBoxLayout, QInputDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout, QTreeView, QHBoxLayout, QInputDialog, QMenu
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt
 
 from DB import Cars, Clients
 from AddClientDialog import AddClientDialog
-
+from ResultTable import ResultTable
 
 class App(QMainWindow):
 
@@ -66,6 +66,10 @@ class App(QMainWindow):
         updButton.triggered.connect(self.update)
         additMenu.addAction(updButton)
 
+        fndButton = QAction(QIcon(), 'Найти покупателя', self)
+        fndButton.triggered.connect(self.findClient)
+        additMenu.addAction(fndButton)
+
         exitButton = QAction(QIcon(), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.triggered.connect(self.close)
@@ -94,6 +98,22 @@ class App(QMainWindow):
             cl = Clients.select().where(Clients.id == _id).get()
             cl.delete_instance()
         self.update()
+
+    def findClient(self):
+        _id, okPressed = QInputDialog.getInt(self, "Поиск покупателей", "Введите ID авто: ")
+        if okPressed:
+            car = Cars.select().where(Cars.id == _id).get()
+            find_clients = Clients.select().where(
+                (Clients.brand == car.brand) &
+                (Clients.model == car.model) &
+                (Clients.year <= car.year) &
+                (Clients.condition >= car.condition) &
+                (Clients.price >= car.price)
+            )
+            res = ResultTable()
+            res.showClientsResult(find_clients)
+            res.exec_()
+
 
 class TabsWidget(QWidget):
 
