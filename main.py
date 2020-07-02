@@ -1,8 +1,7 @@
 import sys
 from peewee import *
 
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox
-
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 
@@ -83,6 +82,9 @@ class App(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.initMenu()
 
+        self.tabs_widget = TabsWidget(self)
+        self.setCentralWidget(self.tabs_widget)
+
         self.update()
         self.show()
 
@@ -100,6 +102,30 @@ class App(QMainWindow):
 
     def on_remCar(self):
         print("test3")
+
+
+class TabsWidget(QWidget):
+
+    def __init__(self, parent):
+        super(QWidget, self).__init__(parent)
+        self.layout = QVBoxLayout(self)
+
+        self.tabs = QTabWidget()
+        self.tabCars = QWidget()
+        self.tabClients = QWidget()
+
+        self.tabs.addTab(self.tabCars,"Авто")
+        self.tabs.addTab(self.tabClients,"Клиенты")
+
+        self.tabCars.layout = QVBoxLayout(self)
+        self.pushButton1 = QPushButton("PyQt5 button")
+        self.tabCars.layout.addWidget(self.pushButton1)
+        self.tabCars.setLayout(self.tabCars.layout)
+
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
