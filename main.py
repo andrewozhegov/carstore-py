@@ -74,6 +74,10 @@ class App(QMainWindow):
         fndButton1.triggered.connect(self.findNewAuto1)
         additMenu.addAction(fndButton1)
 
+        fndButton2 = QAction(QIcon(), 'Новые авто', self)
+        fndButton2.triggered.connect(self.findNewAuto)
+        additMenu.addAction(fndButton2)
+
         exitButton = QAction(QIcon(), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.triggered.connect(self.close)
@@ -124,6 +128,11 @@ class App(QMainWindow):
         res.showCarsResult(find_car)
         res.exec_()
 
+    def findNewAuto(self):
+        find_car = Cars.select().where(Cars.condition == 0)
+        res = ResultTable()
+        res.showCarsResult(find_car)
+        res.exec_()
 
 
 class TabsWidget(QWidget):
