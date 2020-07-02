@@ -1,9 +1,10 @@
 import sys
 from peewee import *
 
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout
+from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QDialog, QMessageBox, QAction,  QTabWidget,QVBoxLayout, QTreeView, QHBoxLayout
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 
 from DB import Cars, Clients
 from AddClientDialog import AddClientDialog
@@ -20,6 +21,7 @@ class App(QMainWindow):
             sum_cars += car.price
         msg = 'Покупательская способность: ' + str(round(sum_client/sum_cars, 4))
         self.statusBar().showMessage(msg)
+        self.tabs_widget.updCarsTable()
 
     def __init__(self):
         super().__init__()
@@ -106,6 +108,8 @@ class App(QMainWindow):
 
 class TabsWidget(QWidget):
 
+    BRAND, MODEL, YEAR, POWER, GEARBOX, COND, FEAT, PRICE = range(8)
+
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
@@ -117,13 +121,54 @@ class TabsWidget(QWidget):
         self.tabs.addTab(self.tabCars,"Авто")
         self.tabs.addTab(self.tabClients,"Клиенты")
 
-        self.tabCars.layout = QVBoxLayout(self)
-        self.pushButton1 = QPushButton("PyQt5 button")
-        self.tabCars.layout.addWidget(self.pushButton1)
-        self.tabCars.setLayout(self.tabCars.layout)
+        self.initCarsTable()
+
+    def updCarsTable(self):
+        #self.model.clear()
+        print()
+
+    def initCarsTable(self):
+        self.dataView = QTreeView()
+        self.dataView.setRootIsDecorated(False)
+        self.dataView.setAlternatingRowColors(True)
+
+        dataLayout = QHBoxLayout()
+        dataLayout.addWidget(self.dataView)
+        self.tabCars.setLayout(dataLayout)
+
+        model = self.createModel(self)
+        self.dataView.setModel(model)
+
+        for car in Cars.select():
+            self.addCarEntry(model, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
 
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
+
+    def createModel(self,parent):
+        model = QStandardItemModel(0, 8, parent)
+        model.setHeaderData(self.BRAND, Qt.Horizontal, "Марка")
+        model.setHeaderData(self.MODEL, Qt.Horizontal, "Модель")
+        model.setHeaderData(self.YEAR, Qt.Horizontal, "Год")
+        model.setHeaderData(self.POWER, Qt.Horizontal, "Мощность")
+        model.setHeaderData(self.GEARBOX, Qt.Horizontal, "Коробка")
+        model.setHeaderData(self.COND, Qt.Horizontal, "Пробег")
+        model.setHeaderData(self.FEAT, Qt.Horizontal, "Информ")
+        model.setHeaderData(self.PRICE, Qt.Horizontal, "Цена")
+        return model
+
+    def addCarEntry(self,model, brand, _model, year, power, gear, cond, feat, price):
+        model.insertRow(0)
+        model.setData(model.index(0, self.BRAND), brand)
+        model.setData(model.index(0, self.MODEL), _model)
+        model.setData(model.index(0, self.YEAR), year)
+        model.setData(model.index(0, self.POWER), power)
+        model.setData(model.index(0, self.GEARBOX), gear)
+        model.setData(model.index(0, self.COND), cond)
+        model.setData(model.index(0, self.FEAT), feat)
+        model.setData(model.index(0, self.PRICE), price)
+
 
 
 if __name__ == '__main__':
