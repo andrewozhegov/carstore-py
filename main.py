@@ -97,7 +97,7 @@ class App(QMainWindow):
 
 class TabsWidget(QWidget):
 
-    BRAND, MODEL, YEAR, POWER, GEARBOX, COND, FEAT, PRICE = range(8)
+    ID, BRAND, MODEL, YEAR, POWER, GEARBOX, COND, FEAT, PRICE = range(9)
     C_ID, C_NAME, C_ADDR, C_BRAND, C_MODEL, C_YEAR, C_COND, C_PRICE = range(8)
 
     def __init__(self, parent):
@@ -132,10 +132,11 @@ class TabsWidget(QWidget):
         model = self.createModel(self)
         self.dataView.setModel(model)
         for car in Cars.select():
-            self.addCarEntry(model, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
+            self.addCarEntry(model, car.id, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
 
-    def createModel(self,parent):
-        model = QStandardItemModel(0, 8, parent)
+    def createModel(self, parent):
+        model = QStandardItemModel(0, 9, parent)
+        model.setHeaderData(self.ID, Qt.Horizontal, "id")
         model.setHeaderData(self.BRAND, Qt.Horizontal, "Марка")
         model.setHeaderData(self.MODEL, Qt.Horizontal, "Модель")
         model.setHeaderData(self.YEAR, Qt.Horizontal, "Год")
@@ -146,8 +147,9 @@ class TabsWidget(QWidget):
         model.setHeaderData(self.PRICE, Qt.Horizontal, "Цена")
         return model
 
-    def addCarEntry(self,model, brand, _model, year, power, gear, cond, feat, price):
+    def addCarEntry(self, model, _id, brand, _model, year, power, gear, cond, feat, price):
         model.insertRow(0)
+        model.setData(model.index(0, self.ID), _id)
         model.setData(model.index(0, self.BRAND), brand)
         model.setData(model.index(0, self.MODEL), _model)
         model.setData(model.index(0, self.YEAR), year)
