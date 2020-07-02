@@ -70,6 +70,10 @@ class App(QMainWindow):
         fndButton.triggered.connect(self.findClient)
         additMenu.addAction(fndButton)
 
+        fndButton1 = QAction(QIcon(), 'Авто с малым пробегом', self)
+        fndButton1.triggered.connect(self.findNewAuto1)
+        additMenu.addAction(fndButton1)
+
         exitButton = QAction(QIcon(), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
         exitButton.triggered.connect(self.close)
@@ -113,6 +117,13 @@ class App(QMainWindow):
             res = ResultTable()
             res.showClientsResult(find_clients)
             res.exec_()
+
+    def findNewAuto1(self):
+        find_car = Cars.select().where(Cars.condition <= 30000)
+        res = ResultTable()
+        res.showCarsResult(find_car)
+        res.exec_()
+
 
 
 class TabsWidget(QWidget):

@@ -52,7 +52,7 @@ class ResultTable(QDialog):
         self.dataView.setModel(None)
         model = self.createModel(self)
         self.dataView.setModel(model)
-        for car in Cars.select():
+        for car in _list:
             self.addCarEntry(model, car.id, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
 
     def createModel(self, parent):
