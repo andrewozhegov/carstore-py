@@ -21,46 +21,41 @@ class App(QMainWindow):
             sum_cars += car.price
         msg = 'Покупательская способность: ' + str(round(sum_client/sum_cars, 4))
         self.statusBar().showMessage(msg)
+
         self.tabs_widget.updCarsTable()
+        self.tabs_widget.updClientsTable()
 
     def __init__(self):
         super().__init__()
         self.title = 'CarStore'
         self.left = 10
         self.top = 10
-        self.width = 640
+        self.width = 720
         self.height = 480
         self.initUI()
 
     def initMenu(self):
         mainMenu = self.menuBar()
 
+        '''
         carsMenu = mainMenu.addMenu('Авто')
 
         addCarButton = QAction(QIcon(), 'Добавить', self)
-        #addCarButton.setShortcut('Ctrl+N')
-        addCarButton.setStatusTip('Add client')
         addCarButton.triggered.connect(self.on_addCar)
         carsMenu.addAction(addCarButton)
 
         remCarButton = QAction(QIcon(), 'Удалить', self)
-        #remCarButton.setShortcut('Ctrl+N')
-        remCarButton.setStatusTip('Add client')
         remCarButton.triggered.connect(self.on_remCar)
         carsMenu.addAction(remCarButton)
-
+        '''
 
         clientsMenu = mainMenu.addMenu('Клиенты')
 
         addClientButton = QAction(QIcon(), 'Добавить', self)
-        #addClientButton.setShortcut('Ctrl+N')
-        addClientButton.setStatusTip('Add client')
         addClientButton.triggered.connect(self.on_addClient)
         clientsMenu.addAction(addClientButton)
 
         remClientButton = QAction(QIcon(), 'Удалить', self)
-        #remClientButton.setShortcut('Ctrl+N')
-        remClientButton.setStatusTip('Add client')
         remClientButton.triggered.connect(self.on_remClient)
         clientsMenu.addAction(remClientButton)
 
@@ -68,14 +63,11 @@ class App(QMainWindow):
         additMenu = mainMenu.addMenu('Дополнительно')
 
         updButton = QAction(QIcon(), 'Обновить', self)
-        #updButton.setShortcut('Ctrl+N')
-        updButton.setStatusTip('Add client')
         updButton.triggered.connect(self.update)
         additMenu.addAction(updButton)
 
         exitButton = QAction(QIcon(), 'Exit', self)
         exitButton.setShortcut('Ctrl+Q')
-        exitButton.setStatusTip('Exit application')
         exitButton.triggered.connect(self.close)
         additMenu.addAction(exitButton)
 
@@ -99,16 +91,11 @@ class App(QMainWindow):
     def on_remClient(self):
         print("test1")
 
-    def on_addCar(self):
-        print("test2")
-
-    def on_remCar(self):
-        print("test3")
-
 
 class TabsWidget(QWidget):
 
     BRAND, MODEL, YEAR, POWER, GEARBOX, COND, FEAT, PRICE = range(8)
+    C_ID, C_NAME, C_ADDR, C_BRAND, C_MODEL, C_YEAR, C_COND, C_PRICE = range(8)
 
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
@@ -122,29 +109,27 @@ class TabsWidget(QWidget):
         self.tabs.addTab(self.tabClients,"Клиенты")
 
         self.initCarsTable()
-
-    def updCarsTable(self):
-        #self.model.clear()
-        print()
-
-    def initCarsTable(self):
-        self.dataView = QTreeView()
-        self.dataView.setRootIsDecorated(False)
-        self.dataView.setAlternatingRowColors(True)
-
-        dataLayout = QHBoxLayout()
-        dataLayout.addWidget(self.dataView)
-        self.tabCars.setLayout(dataLayout)
-
-        model = self.createModel(self)
-        self.dataView.setModel(model)
-
-        for car in Cars.select():
-            self.addCarEntry(model, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
+        self.initClientsTable()
 
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
+    def initCarsTable(self):
+        self.tabCars.layout = QVBoxLayout(self)
+
+        self.dataView = QTreeView()
+        self.dataView.setRootIsDecorated(False)
+        self.dataView.setAlternatingRowColors(True)
+
+        self.tabCars.layout.addWidget(self.dataView)
+        self.tabCars.setLayout(self.tabCars.layout)
+
+    def updCarsTable(self):
+        self.dataView.setModel(None)
+        model = self.createModel(self)
+        self.dataView.setModel(model)
+        for car in Cars.select():
+            self.addCarEntry(model, car.brand, car.model, car.year, car.engine_power, car.auto_gearbox, car.condition, car.features, car.price)
 
     def createModel(self,parent):
         model = QStandardItemModel(0, 8, parent)
@@ -169,6 +154,45 @@ class TabsWidget(QWidget):
         model.setData(model.index(0, self.FEAT), feat)
         model.setData(model.index(0, self.PRICE), price)
 
+
+    def initClientsTable(self):
+        self.tabClients.layout = QVBoxLayout(self)
+
+        self.dataViewCl = QTreeView()
+        self.dataViewCl.setRootIsDecorated(False)
+        self.dataViewCl.setAlternatingRowColors(True)
+
+        self.tabClients.layout.addWidget(self.dataViewCl)
+        self.tabClients.setLayout(self.tabClients.layout)
+
+    def updClientsTable(self):
+        self.dataViewCl.setModel(None)
+        modelCl = self.createModelCl(self)
+        self.dataViewCl.setModel(modelCl)
+        for cl in Clients.select():
+            self.addClEntry(modelCl, cl.id, cl.name, cl.address, cl.brand, cl.model, cl.year, cl.condition, cl.price)
+
+    def createModelCl(self,parent):
+        model = QStandardItemModel(0, 8, parent)
+        model.setHeaderData(self.C_ID, Qt.Horizontal, "id")
+        model.setHeaderData(self.C_NAME, Qt.Horizontal, "ФИО")
+        model.setHeaderData(self.C_ADDR, Qt.Horizontal, "Адрес")
+        model.setHeaderData(self.C_BRAND, Qt.Horizontal, "Марка")
+        model.setHeaderData(self.C_MODEL, Qt.Horizontal, "Модель")
+        model.setHeaderData(self.C_COND, Qt.Horizontal, "Пробег")
+        model.setHeaderData(self.C_PRICE, Qt.Horizontal, "Цена")
+        return model
+
+    def addClEntry(self, model, _id, name, addr, brand, _model, year, cond, price):
+        model.insertRow(0)
+        model.setData(model.index(0, self.C_ID), _id)
+        model.setData(model.index(0, self.C_NAME), name)
+        model.setData(model.index(0, self.C_ADDR), addr)
+        model.setData(model.index(0, self.C_BRAND), brand)
+        model.setData(model.index(0, self.C_MODEL), _model)
+        model.setData(model.index(0, self.C_YEAR), year)
+        model.setData(model.index(0, self.C_COND), cond)
+        model.setData(model.index(0, self.C_PRICE), price)
 
 
 if __name__ == '__main__':
